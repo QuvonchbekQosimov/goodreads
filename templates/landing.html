@@ -10,14 +10,13 @@
     </h1>
 
    <p>
-        <a href="/users/templates/users/register.html">
-            Register
-        </a>
-       /
-       <a href="/users/templates/users/login.html">
-           Login
-       </a>
-
-   </p>
+    <a href="{% url 'users:register' %}">
+        Register
+    </a>
+    /
+    <a href="{% url 'users:login' %}">
+        Login
+    </a>
+</p>
 </body>
 </html>
