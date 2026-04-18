@@ -2,6 +2,7 @@ from django.contrib.auth.models import User
 from django.test import TestCase
 from django.urls import reverse
 
+
 class RegistrationTestCase(TestCase):
     def test_user_account_is_created(self):
         response = self.client.post(
@@ -21,6 +22,7 @@ class RegistrationTestCase(TestCase):
         self.assertEqual(user.last_name, 'testlastname')
         self.assertEqual(user.email, 'testemail@gmail.com')
         self.assertTrue(user.check_password('testpassword'))
+
     def test_required_fields(self):
         response = self.client.post(
             reverse('users:register'),
@@ -34,7 +36,7 @@ class RegistrationTestCase(TestCase):
         self.assertEqual(User.objects.count(), 0)
         self.assertFormError(response.context['form'], 'username', 'This field is required.')
         self.assertFormError(response.context['form'], 'password', 'This field is required.')
-        
+
     def test_invalid_email(self):
         response = self.client.post(
             reverse('users:register'),
@@ -71,4 +73,3 @@ class RegistrationTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(User.objects.count(), 1)
         self.assertFormError(response.context['form'], 'username', 'A user with that username already exists.')
-        

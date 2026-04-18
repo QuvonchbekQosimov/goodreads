@@ -1,6 +1,3 @@
-from multiprocessing import context
-
-from django.contrib.auth.models import User
 from django.shortcuts import render, redirect
 from django.views import View
 
@@ -14,6 +11,7 @@ class RegisterView(View):
             'form': create_form
         }
         return render(request, 'users/register.html', context)
+
     def post(self, request):
 
         create_form = UserCreateForm(data=request.POST)
@@ -26,6 +24,7 @@ class RegisterView(View):
                 'form': create_form
             }
             return render(request, 'users/register.html', context)
+
 
 class LoginView(View):
     def get(self, request):
