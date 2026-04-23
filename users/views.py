@@ -30,7 +30,7 @@ class RegisterView(View):
 class LoginView(View):
     def get(self, request):
         login_form = UserLoginForm()
-        return render(request, 'users/login.html', {'login_form': login_form})
+        return render(request, 'users/login.html', {'form': login_form})
 
     def post(self, request):
         login_form = UserLoginForm(data=request.POST)
@@ -39,6 +39,5 @@ class LoginView(View):
             user = login_form.login(request)
             if user:
                 login(request, user)
-                return redirect('books:list')
-
-        return render(request, 'users/login.html', {'login_form': login_form})
+                return redirect('landing_page')
+        return render(request, 'users/login.html', {'form': login_form})

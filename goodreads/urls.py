@@ -1,13 +1,11 @@
 from django.contrib import admin
-from django.urls import path
 from django.urls import path, include
-import users
-from users import urls
-from .views import landing_page
-from users.views import RegisterView, LoginView
+from django.views.generic import TemplateView
 
 urlpatterns = [
-    path("", landing_page, name="landing_page"),
-    path('users/', include('users.urls')),
+    path("", TemplateView.as_view(template_name="landing.html"), name="landing_page"),
+
+    path('users/', include('users.urls', namespace='users')),
+
     path('admin/', admin.site.urls),
 ]
