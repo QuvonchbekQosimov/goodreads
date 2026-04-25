@@ -96,3 +96,30 @@ class LoginTestCase(TestCase):
         )
         user = get_user((self.client))
         self.assertTrue(user.is_authenticated)
+
+    def test_wrong_password(self):
+        db_user = User.objects.create_user(
+            username='testuser',
+            first_name='testname'
+        )
+        db_user.set_password('somepass')
+        db_user.save()
+        self.client.post(
+            reverse("users:login"),
+            data={
+                "username": "wrong-username",
+                "password": "somepass"
+            }
+        )
+        user = get_user(self.client)
+        self.assertFalse(user.is_authenticated)
+        self.client.post(
+            reverse("users:login"),
+            data={
+                "username": "username",
+                "password": "wrong-somepass"
+            }
+        )
+
+        user = get_user(self.client)
+        self.assertFalse(user.is_authenticated)
