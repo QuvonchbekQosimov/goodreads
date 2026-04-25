@@ -1,3 +1,4 @@
+from django.contrib.auth import get_user
 from django.contrib.auth.models import User
 from django.test import TestCase
 from django.urls import reverse
@@ -73,3 +74,25 @@ class RegistrationTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(User.objects.count(), 1)
         self.assertFormError(response.context['form'], 'username', 'A user with that username already exists.')
+
+
+class LoginTestCase(TestCase):
+    def test_successful_login(self):
+        db_user = User.objects.create_user(
+            username='testuser',
+            first_name='testname',
+            lastname='testlastname',
+            email='testemail@gmail.com',
+            password='testpassword'
+        )
+        db_user.set_password("somepass")
+        db_user.save()
+        self.client.post(
+            reverse("users:login"),
+            data={
+                "username": "testuser",
+                "password": "somepass"
+            }
+        )
+        user = get_user((self.client))
+        self.assertTrue(user.is_authenticated)
