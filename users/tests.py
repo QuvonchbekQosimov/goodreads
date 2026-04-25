@@ -81,7 +81,7 @@ class LoginTestCase(TestCase):
         db_user = User.objects.create_user(
             username='testuser',
             first_name='testname',
-            lastname='testlastname',
+            last_name='testlastname',
             email='testemail@gmail.com',
             password='testpassword'
         )

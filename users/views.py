@@ -3,7 +3,7 @@ from django.shortcuts import render, redirect
 from django.views import View
 from httplib2 import Authentication
 
-from users.forms import UserCreateForm
+from users.forms import UserCreateForm, UserLoginForm
 
 
 class RegisterView(View):
@@ -16,7 +16,7 @@ class RegisterView(View):
 
     def post(self, request):
 
-        create_form = Authentication(data=request.POST)
+        create_form = UserCreateForm(data=request.POST)
 
         if create_form.is_valid():
             create_form.save()
@@ -34,7 +34,7 @@ class LoginView(View):
         return render(request, 'users/login.html', {'form': login_form})
 
     def post(self, request):
-        login_form = Authentication(data=request.POST)
+        login_form = UserLoginForm(data=request.POST)
 
         if login_form.is_valid():
             user = login_form.login(request)
