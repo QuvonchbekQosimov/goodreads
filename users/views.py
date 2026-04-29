@@ -1,5 +1,7 @@
-from django.contrib.auth import login
+from django.contrib import messages
+from django.contrib.auth import login, logout
 from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render, redirect
 from django.views import View
 
@@ -34,19 +36,25 @@ class LoginView(View):
         return render(request, 'users/login.html', {'form': login_form})
 
     def post(self, request):
-        # 1-TUZATISH: UserCreateForm o'rniga AuthenticationForm yozamiz
         login_form = AuthenticationForm(data=request.POST)
 
         if login_form.is_valid():
-            # 2-TUZATISH: .login() emas, .get_user() orqali foydalanuvchini olamiz
             user = login_form.get_user()
             if user:
                 login(request, user)
-                return redirect('landing_page')
+                messages.success(request, "Login successful")
+                return redirect('books:list')
 
         return render(request, 'users/login.html', {'form': login_form})
 
 
-class ProfileView(View):
+class ProfileView(LoginRequiredMixin, View):
     def get(self, request):
         return render(request, 'users/profile.html', {'user': request.user})
+
+
+class LogoutView(LoginRequiredMixin, View):
+    def get(self, request):
+        logout(request)
+        messages.info(request, "Logout successful")
+        return redirect('landing_page')

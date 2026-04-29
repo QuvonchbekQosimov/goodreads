@@ -1,10 +1,12 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Books Detail Page</title>
-</head>
-<body>
+{% extends "base.html" %}
+
+{% block title %}
+Books Detail Page
+
+{% endblock %}
+
+{% block context %}
+
 <h1>
     Books Detail Page
 </h1>
@@ -17,5 +19,4 @@
     {{ book.description }}
 </p>
 
-</body>
-</html>
+{% endblock %}

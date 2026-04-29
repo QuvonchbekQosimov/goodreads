@@ -1,10 +1,13 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Books Page</title>
-</head>
-<body>
+{% extends "base.html" %}
+
+
+{% block title %}
+Books Page
+{% endblock %}
+
+
+{% block content %}
+
 <h1>Books</h1>
 
 {% if books %}
@@ -20,5 +23,4 @@
 No books found.
 {% endif %}
 
-</body>
-</html>
+{% endblock %}

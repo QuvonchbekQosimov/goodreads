@@ -77,33 +77,25 @@ class RegistrationTestCase(TestCase):
 
 
 class LoginTestCase(TestCase):
+    def setUp(self):
+        self.db_user = User.objects.create(username="Naruto", first_name="Uzumaki")
+        self.db_user.set_password("somepass")
+        self.db_user.save()
+
     def test_successful_login(self):
-        db_user = User.objects.create_user(
-            username='testuser',
-            first_name='testname',
-            last_name='testlastname',
-            email='testemail@gmail.com',
-            password='testpassword'
-        )
-        db_user.set_password("somepass")
-        db_user.save()
         self.client.post(
             reverse("users:login"),
             data={
-                "username": "testuser",
+                "username": "Naruto",
                 "password": "somepass"
-            }
+            },
+            follow=True
         )
         user = get_user((self.client))
+        print(user.is_authenticated)
         self.assertTrue(user.is_authenticated)
 
     def test_wrong_password(self):
-        db_user = User.objects.create_user(
-            username='testuser',
-            first_name='testname'
-        )
-        db_user.set_password('somepass')
-        db_user.save()
         self.client.post(
             reverse("users:login"),
             data={
@@ -123,3 +115,35 @@ class LoginTestCase(TestCase):
 
         user = get_user(self.client)
         self.assertFalse(user.is_authenticated)
+
+    def test_logout(self):
+        self.client.login(username="Naruto", password="somepass")
+
+        self.client.get(reverse("users:logout"))
+        user = get_user(self.client)
+        self.assertFalse(user.is_authenticated)
+
+
+class ProfileTestCase(TestCase):
+    def test_login_required(self):
+        response = self.client.get(reverse("users:profile"))
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, reverse("users:login") + "?next=" + reverse("users:profile"))
+
+    def test_profile_details(self):
+        user = User.objects.create_user(
+            username='testuser',
+            first_name='testname',
+            last_name='testlastname',
+            email='testemail@gmail.com',
+            password='testpassword'
+        )
+        self.client.login(username="testuser", password="testpassword")
+        response = self.client.get(reverse("users:profile"))
+
+        self.assertEqual(response.status_code, 200)
+
+        self.assertContains(response, user.username)
+        self.assertContains(response, user.first_name)
+        self.assertContains(response, user.last_name)
+        self.assertContains(response, user.email)
