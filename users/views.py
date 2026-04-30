@@ -5,12 +5,12 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render, redirect
 from django.views import View
 
-from users.forms import UserCreateForm
+from users.forms import CustomUserCreateForm, CustomUserUpdateForm
 
 
 class RegisterView(View):
     def get(self, request):
-        create_form = UserCreateForm()
+        create_form = CustomUserCreateForm()
         context = {
             'form': create_form
         }
@@ -18,7 +18,7 @@ class RegisterView(View):
 
     def post(self, request):
 
-        create_form = UserCreateForm(data=request.POST)
+        create_form = CustomUserCreateForm(data=request.POST)
 
         if create_form.is_valid():
             create_form.save()
@@ -58,3 +58,17 @@ class LogoutView(LoginRequiredMixin, View):
         logout(request)
         messages.info(request, "Logout successful")
         return redirect('landing_page')
+
+
+class ProfileUpdateView(LoginRequiredMixin, View):
+    def get(self, request):
+        user_update_form = CustomUserUpdateForm(instance=request.user)
+        return render(request, 'users/profile_edit.html', {'form': user_update_form})
+
+    def post(self, request):
+        user_update_form = CustomUserUpdateForm(instance=request.user, data=request.POST)
+        if user_update_form.is_valid():
+            user_update_form.save()
+            messages.success(request, "You have successfully updates your profile.")
+            return redirect('users:profile')
+        return render(request, 'users/profile_edit.html', {'form': user_update_form})

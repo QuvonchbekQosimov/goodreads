@@ -2,31 +2,36 @@
 
 {% block title %}
 
-Profile Page
+    Profile Page
 
 {% endblock %}
 
 {% block content %}
 
-<h1>
-    Profile Page
-</h1>
+    <h1>
+        Profile Page
+    </h1>
 
-<p>
-    Username : {{ user.username }}
-</p>
-<br>
-<p>
-    First Name : {{ user.first_name }}
-</p>
-<br>
-<p>
-    Last Name : {{ user.last_name }}
-</p>
-<br>
-<p>
-    Email : {{ user.email }}
-</p>
+
+    <a href="{% url "users:profile-edit" %}">
+        Edit Page
+    </a>
+
+    <p>
+        Username : {{ user.username }}
+    </p>
+    <br>
+    <p>
+        First Name : {{ user.first_name }}
+    </p>
+    <br>
+    <p>
+        Last Name : {{ user.last_name }}
+    </p>
+    <br>
+    <p>
+        Email : {{ user.email }}
+    </p>
 
 {% endblock %}
 

@@ -1,7 +1,8 @@
-from django.contrib.auth import get_user
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user, get_user_model
 from django.test import TestCase
 from django.urls import reverse
+
+CustomUser = get_user_model()
 
 
 class RegistrationTestCase(TestCase):
@@ -18,7 +19,7 @@ class RegistrationTestCase(TestCase):
         )
 
         self.assertEqual(response.status_code, 302)
-        user = User.objects.get(username='testuser')
+        user = CustomUser.objects.get(username='testuser')
         self.assertEqual(user.first_name, 'testname')
         self.assertEqual(user.last_name, 'testlastname')
         self.assertEqual(user.email, 'testemail@gmail.com')
@@ -34,7 +35,7 @@ class RegistrationTestCase(TestCase):
         )
 
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(User.objects.count(), 0)
+        self.assertEqual(CustomUser.objects.count(), 0)
         self.assertFormError(response.context['form'], 'username', 'This field is required.')
         self.assertFormError(response.context['form'], 'password', 'This field is required.')
 
@@ -50,11 +51,11 @@ class RegistrationTestCase(TestCase):
             }
         )
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(User.objects.count(), 0)
+        self.assertEqual(CustomUser.objects.count(), 0)
         self.assertFormError(response.context['form'], 'email', 'Enter a valid email address.')
 
     def test_unique_username(self):
-        User.objects.create_user(
+        CustomUser.objects.create_user(
             username='testuser',
             first_name='testname',
             last_name='testlastname',
@@ -72,13 +73,13 @@ class RegistrationTestCase(TestCase):
             }
         )
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(User.objects.count(), 1)
+        self.assertEqual(CustomUser.objects.count(), 1)
         self.assertFormError(response.context['form'], 'username', 'A user with that username already exists.')
 
 
 class LoginTestCase(TestCase):
     def setUp(self):
-        self.db_user = User.objects.create(username="Naruto", first_name="Uzumaki")
+        self.db_user = CustomUser.objects.create(username="Naruto", first_name="Uzumaki")
         self.db_user.set_password("somepass")
         self.db_user.save()
 
@@ -131,7 +132,7 @@ class ProfileTestCase(TestCase):
         self.assertEqual(response.url, reverse("users:login") + "?next=" + reverse("users:profile"))
 
     def test_profile_details(self):
-        user = User.objects.create_user(
+        user = CustomUser.objects.create_user(
             username='testuser',
             first_name='testname',
             last_name='testlastname',
