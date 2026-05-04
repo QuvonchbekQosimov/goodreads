@@ -5,3 +5,9 @@
     border-radius: 50%;
     margin-bottom: 10px;
 }
+
+.cover_picture {
+    width: 220px;
+    height: 300px;
+    border-radius: 5px;
+}

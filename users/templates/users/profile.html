@@ -1,46 +1,61 @@
 {% extends "base.html" %}
 
 {% block title %}
-
     Profile Page
-
 {% endblock %}
 
 {% block content %}
 
-    <h1>
-        Profile Page
-    </h1>
+    <section class="h-100 gradient-custom-2">
+        <div class="container py-5 h-100">
+            <div class="row d-flex justify-content-center">
+                <div class="col col-lg-9 col-xl-8">
+                    <div class="card">
 
+                        <div class="rounded-top text-white d-flex flex-row"
+                             style="background-color: #000; height:200px;">
 
-    <div>
-        {% if user.profile_pic %}
-            <img src="{{ user.profile_pic.url }}" alt="Profile Picture" class="profile-pic">
-        {% endif %}
-    </div>
+                            <div class="ms-4 mt-5 d-flex flex-column" style="width: 150px;">
+                                {% if user.profile_pic %}
+                                    <img src="{{ user.profile_pic.url }}" alt="Profile Picture"
+                                         class="img-fluid img-thumbnail mt-4 mb-2 profile-pic"
+                                         style="width: 150px; height: 150px; object-fit: cover; z-index: 1;">
+                                {% else %}
+                                    <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-profiles/avatar-1.webp"
+                                         alt="Default profile image"
+                                         class="img-fluid img-thumbnail mt-4 mb-2"
+                                         style="width: 150px; height: 150px; object-fit: cover; z-index: 1;">
+                                {% endif %}
 
+                                <a href="{% url 'users:profile-edit' %}" data-mdb-button-init data-mdb-ripple-init
+                                   class="btn btn-outline-dark text-body" data-mdb-ripple-color="dark"
+                                   style="z-index: 1; background-color: #f8f9fa;">
+                                    Edit Page
+                                </a>
+                            </div>
 
-    <div>
-        <a href="{% url "users:profile-edit" %}">
-            Edit Page
-        </a>
-    </div>
+                            <div class="ms-3" style="margin-top: 130px;">
+                                <h5>{% if user.first_name %}{{ user.first_name }} {{ user.last_name }}{% else %}
+                                    {{ user.username }}{% endif %}</h5>
+                                <p>Joined: {{ user.date_joined|date:"F j, Y" }}</p>
+                            </div>
+                        </div>
+                        <div class="card-body p-4 text-black">
+                            <div class="mb-5 text-body">
+                                <p class="lead fw-normal mb-1">About</p>
+                                <div class="p-4 bg-body-tertiary rounded">
+                                    <p class="font-italic mb-1"><strong>Username:</strong> {{ user.username }}</p>
+                                    <p class="font-italic mb-1"><strong>First Name:</strong> {{ user.first_name }}</p>
+                                    <p class="font-italic mb-1"><strong>Last Name:</strong> {{ user.last_name }}</p>
+                                    <p class="font-italic mb-0"><strong>Email:</strong> {{ user.email }}</p>
+                                </div>
+                            </div>
 
-    <p>
-        Username : {{ user.username }}
-    </p>
-    <br>
-    <p>
-        First Name : {{ user.first_name }}
-    </p>
-    <br>
-    <p>
-        Last Name : {{ user.last_name }}
-    </p>
-    <br>
-    <p>
-        Email : {{ user.email }}
-    </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
 {% endblock %}
-
