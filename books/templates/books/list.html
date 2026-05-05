@@ -7,7 +7,26 @@
 {% block content %}
 
     <div class="container mt-4">
-        <h1 class="mb-4">Books</h1>
+        <h3 class="mb-4">Books</h3>
+        <div class="row mb-5">
+            <div class="col-md-8 mx-auto">
+                <form method="GET" action="{% url 'books:list' %}" class="d-flex shadow-sm rounded">
+                    <input class="form-control form-control-lg me-2 border-primary"
+                           type="search"
+                           name="q"
+                           placeholder="Search books by title or description..."
+                           value="{{ request.GET.q }}">
+                    <button class="btn btn-primary btn-lg px-4" type="submit">
+                        Search
+                    </button>
+                    {% if request.GET.q %}
+                        <a href="{% url 'books:list' %}" class="btn btn-outline-danger btn-lg ms-2 px-4">
+                            Clear
+                        </a>
+                    {% endif %}
+                </form>
+            </div>
+        </div>
 
         {% if books %}
             <div class="row">
@@ -34,6 +53,44 @@
 
                 {% endfor %}
             </div>
+
+            <nav aria-label="Page navigation" class="mt-5 mb-4">
+                <ul class="pagination justify-content-center">
+
+                    {% if page_obj.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}">&laquo; Previous</a>
+                        </li>
+                    {% else %}
+                        <li class="page-item disabled">
+                            <span class="page-link">&laquo; Previous</span>
+                        </li>
+                    {% endif %}
+
+                    {% for num in page_obj.paginator.page_range %}
+                        {% if page_obj.number == num %}
+                            <li class="page-item active" aria-current="page">
+                                <span class="page-link">{{ num }}</span>
+                            </li>
+                        {% else %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if page_obj.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.next_page_number }}">Next &raquo;</a>
+                        </li>
+                    {% else %}
+                        <li class="page-item disabled">
+                            <span class="page-link">Next &raquo;</span>
+                        </li>
+                    {% endif %}
+
+                </ul>
+            </nav>
 
         {% else %}
             <div class="alert alert-info text-center" role="alert">
