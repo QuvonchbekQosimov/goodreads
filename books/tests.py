@@ -1,7 +1,8 @@
 from django.test import TestCase
 from django.urls import reverse
 
-from books.models import Book
+from books.models import Book, BookReview
+from users.models import CustomUser
 
 
 class BooksTestCase(TestCase):
@@ -65,3 +66,36 @@ class BooksTestCase(TestCase):
             self.assertContains(response, "Clean Code")
             self.assertContains(response, "Cybersecurity 101")
             self.assertEqual(len(response.context['books']), 4)
+
+
+class BookReviewTestCase(TestCase):
+    def setUp(self):
+        self.user = CustomUser.objects.create_user(
+            username='testuser',
+            password='testpassword123'
+        )
+        self.book = Book.objects.create(
+            title="Clean Code",
+            description="Dasturlash haqida kitob",
+            isbn="1234567890"
+        )
+
+    def test_add_review(self):
+        self.client.login(username='testuser', password='testpassword123')
+
+        url = reverse('books:add_review', kwargs={'id': self.book.id})
+        data = {
+            'stars_given': 5,
+            'comment': 'Ajoyib kitob!'
+        }
+
+        response = self.client.post(url, data)
+
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(BookReview.objects.count(), 1)
+
+        review = BookReview.objects.first()
+        self.assertEqual(review.stars_given, 5)
+        self.assertEqual(review.comment, 'Ajoyib kitob!')
+        self.assertEqual(review.CustomUser, self.user)
+        self.assertEqual(review.book, self.book)

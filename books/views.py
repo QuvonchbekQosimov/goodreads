@@ -1,7 +1,12 @@
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Q
+from django.shortcuts import redirect
+from django.urls import reverse
+from django.views import View
 from django.views.generic import DetailView, ListView
 
-from books.models import Book
+from books.forms import ReviewForm
+from books.models import Book, BookReview
 
 
 class BooksView(ListView):
@@ -28,6 +33,7 @@ class BooksDetailsView(DetailView):
     context_object_name = 'book'
     pk_url_kwarg = "id"
 
+
 # class BooksView(View):
 #     def get(self, request):
 #         books = Book.objects.all()
@@ -39,3 +45,19 @@ class BooksDetailsView(DetailView):
 #     def get(self, request, id):
 #         book = Book.objects.get(id=id)
 #         return render(request, 'books/details.html', {'book': book})
+
+
+class AddReviewView(LoginRequiredMixin, View):
+    def post(self, request, id):
+        book = Book.objects.get(id=id)
+        form = ReviewForm(request.POST)
+
+        if form.is_valid():
+            BookReview.objects.create(
+                book=book,
+                CustomUser=request.user,
+                stars_given=form.cleaned_data['stars_given'],
+                comment=form.cleaned_data['comment']
+            )
+
+        return redirect(reverse('books:detail', kwargs={'id': book.id}))

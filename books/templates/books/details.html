@@ -6,14 +6,15 @@
 
 {% block content %}
     <div class="container mt-5 mb-5">
-        <div class="row">
+
+        <div class="row mb-5">
             <div class="col-12 col-md-4 mb-4 text-center">
                 {% if book.cover_picture %}
                     <img src="{{ book.cover_picture.url }}" alt="{{ book.title }} cover"
-                         class="img-fluid rounded shadow" style="max-height: 500px; object-fit: cover;">
+                         class="img-fluid rounded shadow-sm" style="max-height: 500px; object-fit: cover;">
                 {% else %}
                     <img src="https://via.placeholder.com/400x600?text=No+Cover" alt="No cover"
-                         class="img-fluid rounded shadow"
+                         class="img-fluid rounded shadow-sm"
                          style="max-height: 500px; object-fit: cover; background-color: #f8f9fa;">
                 {% endif %}
             </div>
@@ -25,13 +26,162 @@
                     {{ book.description }}
                 </p>
                 <div class="mt-5">
-                    <a href="{% url 'books:list' %}" class="btn btn-outline-secondary px-4">
+                    <a href="{% url 'books:list' %}" class="btn btn-outline-secondary px-4 rounded-pill">
                         &larr; Back to Books
                     </a>
                 </div>
             </div>
-
         </div>
-    </div>
 
+        <hr class="my-5">
+
+        <section>
+            <div class="row d-flex justify-content-center mb-4">
+                <div class="col-md-10 col-xl-8 text-center">
+                    <h3 class="fw-bold mb-3">Reader Reviews</h3>
+                    <p class="text-muted">What people are saying about this book</p>
+                </div>
+            </div>
+
+            <div class="row d-flex justify-content-center mb-5">
+                <div class="col-md-8">
+                    {% if request.user.is_authenticated %}
+                        <div class="card shadow border-0"
+                             style="border-radius: 15px; background: linear-gradient(145deg, #ffffff, #fcfcfc);">
+                            <div class="card-body p-4 p-md-5">
+                                <h5 class="fw-bold mb-4 text-center text-dark">
+                                    <i class="fas fa-pen-nib text-primary me-2"></i>Write a Review
+                                </h5>
+                                <form action="{% url 'books:add_review' book.id %}" method="POST">
+                                    {% csrf_token %}
+                                    <div class="mb-4">
+                                        <label class="form-label text-muted fw-bold small text-uppercase">Rating</label>
+                                        <select name="stars_given" class="form-select form-select-lg border-0 shadow-sm"
+                                                style="background-color: #f8f9fa;" required>
+                                            <option value="" disabled selected>Select your rating...</option>
+                                            <option value="5">⭐⭐⭐⭐⭐ (5) - Excellent</option>
+                                            <option value="4">⭐⭐⭐⭐ (4) - Good</option>
+                                            <option value="3">⭐⭐⭐ (3) - Average</option>
+                                            <option value="2">⭐⭐ (2) - Poor</option>
+                                            <option value="1">⭐ (1) - Terrible</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-4">
+                                        <label class="form-label text-muted fw-bold small text-uppercase">Your
+                                            Comment</label>
+                                        <textarea name="comment" class="form-control border-0 shadow-sm" rows="4"
+                                                  style="background-color: #f8f9fa; resize: none;"
+                                                  placeholder="Share your thoughts about this book..."
+                                                  required></textarea>
+                                    </div>
+                                    <div class="text-end">
+                                        <button type="submit"
+                                                class="btn btn-primary rounded-pill px-5 py-2 fw-bold shadow-sm">
+                                            Post Review <i class="fas fa-paper-plane ms-1"></i>
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="card shadow-sm border-0" style="border-radius: 15px; background-color: #f8f9fa;">
+                            <div class="card-body p-5 text-center">
+                                <i class="fas fa-lock fa-3x text-muted mb-3"></i>
+                                <h5 class="fw-bold mb-3">Join the Conversation</h5>
+                                <p class="text-muted mb-4">You must be logged in to share your thoughts and leave a
+                                    review.</p>
+                                <a href="{% url 'users:login' %}"
+                                   class="btn btn-primary rounded-pill px-5 py-2 fw-bold shadow-sm">Log In to Review</a>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="row d-flex justify-content-center">
+                {% for review in book.bookreview_set.all %}
+                    <div class="col-md-4 col-sm-6 mb-4">
+                        <div class="card h-100 border-0 shadow-sm text-center py-4 px-3"
+                             style="border-radius: 20px; background-color: #fcfcfc;">
+
+                            <div class="d-flex justify-content-center mb-3">
+                                {% if review.CustomUser.profile_pic %}
+                                    <img src="{{ review.CustomUser.profile_pic.url }}"
+                                         class="rounded-circle shadow-sm"
+                                         style="width: 90px; height: 90px; object-fit: cover; border: 3px solid #fff;"/>
+                                {% else %}
+                                    <img src="https://ui-avatars.com/api/?name={{ review.CustomUser.username }}&background=random&color=fff&size=90"
+                                         class="rounded-circle shadow-sm"
+                                         style="width: 90px; height: 90px; object-fit: cover; border: 3px solid #fff;"/>
+                                {% endif %}
+                            </div>
+
+                            <h5 class="mb-1 fw-bold text-dark">{{ review.CustomUser.username }}</h5>
+
+                            <ul class="list-unstyled d-flex justify-content-center mb-3">
+                                <li>
+                                    <i class="fa{% if review.stars_given >= 1 %}s{% else %}r{% endif %} fa-star text-warning"></i>
+                                </li>
+                                <li>
+                                    <i class="fa{% if review.stars_given >= 2 %}s{% else %}r{% endif %} fa-star text-warning"></i>
+                                </li>
+                                <li>
+                                    <i class="fa{% if review.stars_given >= 3 %}s{% else %}r{% endif %} fa-star text-warning"></i>
+                                </li>
+                                <li>
+                                    <i class="fa{% if review.stars_given >= 4 %}s{% else %}r{% endif %} fa-star text-warning"></i>
+                                </li>
+                                <li>
+                                    <i class="fa{% if review.stars_given >= 5 %}s{% else %}r{% endif %} fa-star text-warning"></i>
+                                </li>
+                            </ul>
+                            <p class="text-muted px-2" style="font-style: italic; font-size: 0.95rem;">
+                                <i class="fas fa-quote-left pe-2" style="color: #dee2e6;"></i>
+
+                                <span class="review-text">
+                                    {% if review.comment|wordcount > 15 %}
+                                        <span class="short-text">{{ review.comment|truncatewords:15 }}</span>
+                                        <span class="full-text d-none">{{ review.comment }}</span>
+                                        <a href="#" class="text-primary text-decoration-none fw-bold ms-1 toggle-btn"
+                                           onclick="toggleReview(event, this)">More</a>
+                                    {% else %}
+                                        {{ review.comment }}
+                                    {% endif %}
+                                </span>
+
+                                <i class="fas fa-quote-right ps-2" style="color: #dee2e6;"></i>
+                            </p>
+
+                        </div>
+                    </div>
+                {% empty %}
+                    <div class="col-12 text-center mt-2">
+                        <div class="p-5 bg-light rounded-3 shadow-sm border border-white">
+                            <i class="fas fa-comment-dots fa-3x text-muted mb-3"></i>
+                            <h5 class="text-muted mb-0">No reviews yet. Be the first to review this book!</h5>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </section>
+
+    </div>
+    <script>
+        function toggleReview(event, btn) {
+            event.preventDefault();
+            let parent = btn.closest('.review-text');
+            let shortText = parent.querySelector('.short-text');
+            let fullText = parent.querySelector('.full-text');
+
+            if (fullText.classList.contains('d-none')) {
+                fullText.classList.remove('d-none');
+                shortText.classList.add('d-none');
+                btn.innerText = "Less";
+            } else {
+                fullText.classList.add('d-none');
+                shortText.classList.remove('d-none');
+                btn.innerText = "More";
+            }
+        }
+    </script>
 {% endblock %}

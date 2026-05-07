@@ -41,4 +41,4 @@ class BookReview(models.Model):
     )
 
     def __str__(self):
-        return f"{self.book} - {self.stars_given} by {self.CustomUser.CustomUsername}"
+        return f"{self.book.title} - {self.stars_given} by {self.CustomUser.username}"
