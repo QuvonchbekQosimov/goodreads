@@ -4,8 +4,11 @@ from django.contrib import admin
 from django.urls import path, include
 from django.views.generic import TemplateView
 
+from books.views import HomePageView
+
 urlpatterns = [
     path("", TemplateView.as_view(template_name="landing.html"), name="landing_page"),
+    path('home/', HomePageView.as_view(), name='home_page'),
 
     path('users/', include('users.urls')),
     path('books/', include('books.urls')),

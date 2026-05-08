@@ -99,3 +99,27 @@ class BookReviewTestCase(TestCase):
         self.assertEqual(review.comment, 'Ajoyib kitob!')
         self.assertEqual(review.CustomUser, self.user)
         self.assertEqual(review.book, self.book)
+
+
+class HomePageTestCase(TestCase):
+    def setUp(self):
+        self.user = CustomUser.objects.create_user(username='testuser', password='testpassword123')
+        self.book = Book.objects.create(title="Pagination Book", description="A book for testing", isbn="0987654321")
+
+        for i in range(15):
+            BookReview.objects.create(
+                CustomUser=self.user,
+                book=self.book,
+                comment=f"Bu sinov izohi raqam: {i}",
+                stars_given=4
+            )
+
+    def test_home_page_pagination(self):
+        self.client.login(username='testuser', password='testpassword123')
+        response = self.client.get(reverse('home_page'))
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue('page_obj' in response.context)
+        self.assertEqual(len(response.context['page_obj']), 6)
+        response_page_3 = self.client.get(reverse('home_page') + '?page=3')
+        self.assertEqual(response_page_3.status_code, 200)
+        self.assertEqual(len(response_page_3.context['page_obj']), 3)

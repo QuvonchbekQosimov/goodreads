@@ -20,6 +20,23 @@
             </div>
             <div class="col-12 col-md-8">
                 <h1 class="mb-3 fw-bold">{{ book.title }}</h1>
+                <h4 class="text-muted mb-4" style="font-weight: 500;">
+                    Authered by
+                    {% for ba in book.bookauthor_set.all %}
+                        {{ ba.author.full_name }}
+
+                        {% if not forloop.last %}
+                            {% if forloop.revcounter == 2 %}
+                                and
+                            {% else %}
+                                ,
+                            {% endif %}
+                        {% endif %}
+
+                    {% empty %}
+                        Unknown Author
+                    {% endfor %}
+                </h4>
                 <hr>
                 <h5 class="mt-4 mb-3 text-muted">Description</h5>
                 <p class="lead" style="font-size: 1.1rem; line-height: 1.8; text-align: justify;">

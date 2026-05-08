@@ -1,6 +1,7 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.paginator import Paginator
 from django.db.models import Q
-from django.shortcuts import redirect
+from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.views import View
 from django.views.generic import DetailView, ListView
@@ -45,6 +46,22 @@ class BooksDetailsView(DetailView):
 #     def get(self, request, id):
 #         book = Book.objects.get(id=id)
 #         return render(request, 'books/details.html', {'book': book})
+
+
+class HomePageView(View):
+    def get(self, request):
+        reviews = BookReview.objects.all().order_by('-created_at')
+
+        paginator = Paginator(reviews, 6)
+
+        page_num = request.GET.get('page', 1)
+
+        page_obj = paginator.get_page(page_num)
+
+        context = {
+            'page_obj': page_obj
+        }
+        return render(request, 'home.html', context)
 
 
 class AddReviewView(LoginRequiredMixin, View):

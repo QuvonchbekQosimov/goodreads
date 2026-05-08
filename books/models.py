@@ -1,5 +1,6 @@
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
+from django.utils import timezone
 
 from users.models import CustomUser
 
@@ -17,10 +18,14 @@ class Book(models.Model):
 class Author(models.Model):
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
-    email = models.EmailField()
-    bio = models.TextField()
+    bio = models.TextField(blank=True, null=True)
+    email = models.EmailField(null=True, blank=True)
 
     def __str__(self):
+        return f"{self.first_name} {self.last_name}"
+
+    @property
+    def full_name(self):
         return f"{self.first_name} {self.last_name}"
 
 
@@ -39,6 +44,7 @@ class BookReview(models.Model):
     stars_given = models.IntegerField(
         validators=[MinValueValidator(1), MaxValueValidator(5)]
     )
+    created_at = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
         return f"{self.book.title} - {self.stars_given} by {self.CustomUser.username}"
